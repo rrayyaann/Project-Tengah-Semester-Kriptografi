@@ -107,8 +107,8 @@
 | Plaintext | Kunci   | Ciphertext yang Diharapkan |
 |-----------|---------|----------------------------|
 | 0x1234    | 0xABCD  | 0xB6F9                     |
-| 0x0000    | 0xFFFF  | 0x7892                     |
-| 0x5A5A    | 0xA5A5  | 0x3C6D                     |
+| 0x0000    | 0xFFFF  | 0x931C                     |
+| 0x5A5A    | 0xA5A5  | 0x7AF9                     |
 
 ### Test Case 1
 
@@ -182,6 +182,14 @@ ShiftRows
 AddRoundKey
 0x73f2 XOR 0x3ad5
 0x4927
+
+### Test Case 2
+
+![image](https://github.com/user-attachments/assets/7114324c-3e72-4f9e-a7ee-41eb00c10ef3)
+
+### Test Case 3
+
+![image](https://github.com/user-attachments/assets/8c80fed5-5d74-4f6f-a83b-02f8949a68ac)
 
 ---
 ## Kelebihan Mini-AES 
