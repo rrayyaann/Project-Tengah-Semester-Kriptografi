@@ -4,7 +4,7 @@
 
 # Mini-AES 16-bit
 
-Mini-AES itu versi kecil dan sederhana dari algoritma enkripsi terkenal, AES. Jika biasanya AES ribet dan berat, Mini-AES cuma pakai **blok 16-bit** dan **kunci 16-bit**, jadi jauh lebih mudah buat belajar konsep dasarnya.
+Mini-AES adalah versi kecil dan sederhana dari algoritma enkripsi terkenal, AES. Jika biasanya AES ribet dan berat, Mini-AES hanya memakai **blok 16-bit** dan **kunci 16-bit**, jadi jauh lebih mudah buat belajar konsep dasarnya.
 
 ---
 
