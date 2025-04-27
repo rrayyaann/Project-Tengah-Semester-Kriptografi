@@ -21,13 +21,12 @@ class MiniAES:
         0xC, 0x4, 0xD, 0xE
     ]
 
-    # MixColumns matrix (GF(2^4))
+    # MixColumns matrix (GF(2^4)) - Updated values
     MIX_COL_MATRIX = [
         [1, 4],
         [4, 1]
     ]
-    
-    # Inverse MixColumns matrix
+
     INV_MIX_COL_MATRIX = [
         [9, 2],
         [2, 9]
@@ -118,26 +117,39 @@ class MiniAES:
         key_matrix = self._to_state_matrix(key)
         round_keys = [key_matrix]
         
+        self.log(f"Key Expansion Process:")
+        self.log(f"Original Key: {hex(key)} -> Matrix: {key_matrix}")
+        
         for round_idx in range(3):  # Generate 3 round keys
+            self.log(f"\nGenerating Round Key {round_idx+1}:")
             prev_key = round_keys[-1]
             new_key = [[0, 0], [0, 0]]
             
             # Rotate and substitute the second column of the previous key
             rot_col = [prev_key[1][1], prev_key[0][1]]
+            self.log(f"  Rotate second column: [{prev_key[0][1]}, {prev_key[1][1]}] -> [{rot_col[0]}, {rot_col[1]}]")
+            
             sub_col = [self.SBOX[rot_col[0]], self.SBOX[rot_col[1]]]
+            self.log(f"  SubNibbles on rotated column: [{rot_col[0]}, {rot_col[1]}] -> [{sub_col[0]}, {sub_col[1]}]")
             
             # Add Rcon to first element
+            self.log(f"  Add round constant {hex(self.RCON[round_idx])} to first element: {sub_col[0]} -> {sub_col[0] ^ self.RCON[round_idx]}")
             sub_col[0] ^= self.RCON[round_idx]
             
             # Generate first column of the new key
             new_key[0][0] = prev_key[0][0] ^ sub_col[0]
             new_key[1][0] = prev_key[1][0] ^ sub_col[1]
+            self.log(f"  First column of new key = XOR of first column of previous key with transformed column:")
+            self.log(f"    [{prev_key[0][0]}, {prev_key[1][0]}] XOR [{sub_col[0]}, {sub_col[1]}] = [{new_key[0][0]}, {new_key[1][0]}]")
             
             # Generate second column of the new key
             new_key[0][1] = new_key[0][0] ^ prev_key[0][1]
             new_key[1][1] = new_key[1][0] ^ prev_key[1][1]
+            self.log(f"  Second column of new key = XOR of second column of previous key with first column of new key:")
+            self.log(f"    [{prev_key[0][1]}, {prev_key[1][1]}] XOR [{new_key[0][0]}, {new_key[1][0]}] = [{new_key[0][1]}, {new_key[1][1]}]")
             
             round_keys.append(new_key)
+            self.log(f"  Round Key {round_idx+1}: {new_key} (0x{self._from_state_matrix(new_key):04x})")
             
         return round_keys
     
@@ -353,7 +365,7 @@ class MiniAESApp:
         input_frame.pack(fill='both', expand=True, padx=10, pady=5)
         
         # Plaintext input
-        ttk.Label(input_frame, text="Plaintext (16-bit hex):").grid(row=0, column=0, padx=5, pady=5, sticky='w')
+        ttk.Label(input_frame, text="Plaintext/Cyphertext (16-bit hex):").grid(row=0, column=0, padx=5, pady=5, sticky='w')
         self.plaintext_var = tk.StringVar(value="0x1234")
         ttk.Entry(input_frame, textvariable=self.plaintext_var, width=20).grid(row=0, column=1, padx=5, pady=5)
         
@@ -443,7 +455,7 @@ class MiniAESApp:
         input_frame.pack(fill='x', padx=10, pady=5)
         
         # Plaintext input
-        ttk.Label(input_frame, text="Plaintext (16-bit hex):").grid(row=0, column=0, padx=5, pady=5, sticky='w')
+        ttk.Label(input_frame, text="Plaintext/Ciphertext (16-bit hex):").grid(row=0, column=0, padx=5, pady=5, sticky='w')
         self.av_plaintext_var = tk.StringVar(value="0x1234")
         ttk.Entry(input_frame, textvariable=self.av_plaintext_var, width=20).grid(row=0, column=1, padx=5, pady=5)
         
