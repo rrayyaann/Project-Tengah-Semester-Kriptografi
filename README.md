@@ -1,113 +1,201 @@
----
-
-# Project Tengah Semester - Kriptografi
-
+# Project-Tengah-Semester-Kriptografi
+### Kelompok 7 (Kriptografi A)
+| Nama | NRP |
+|---------|---------|
+| Daffa Rajendra Priyatama | 5027231009   |
+| Muhamad Arrayyan | 5027231014   |
+| Naufal Syafi' Hakim | 5027231022   |
+| RM. Novian Malcolm Bayuputra | 5027231035   |
+| Dzaky Faiq Fayyadhi | 5027231047   |
 # Mini-AES 16-bit
+---
 
-Mini-AES adalah versi kecil dan sederhana dari algoritma enkripsi terkenal, AES. Jika biasanya AES ribet dan berat, Mini-AES hanya memakai **blok 16-bit** dan **kunci 16-bit**, jadi jauh lebih mudah buat belajar konsep dasarnya.
+## Fitur
+
+- Enkripsi dan Dekripsi
+- Proses Ekspansi Kunci
+- Mode operasi blok (ECB dan CBC)
+- Pengujian Efek Avalanche
+- GUI Interface
+- Terdapat log proses
 
 ---
 
-## Fitur Utama
+## Mini-AES
 
-- Enkripsi dan dekripsi Mini-AES lengkap
-- Proses perluasan kunci
-- Bisa pakai mode operasi blok: **ECB** dan **CBC**
-- Tes **efek avalanche** (perubahan kecil → hasil berubah drastis)
-- Ada **antarmuka GUI** — jadi nggak perlu repot pakai command line
-- Bisa **input/output lewat file**
-- Ada log proses biar bisa lihat langkah-langkahnya
+### Spesifikasi 
 
----
+- Ukuran Blok: 16 bit (4 nibble)
+- Ukuran Key: 16 bit (4 nibble)
+- Jumlah Round: 3 round
 
-## Cara Kerja Mini-AES
+### Proses Enkripsi Setiap Round
 
-### Spesifikasi Dasar
+1. SubNibbles: Setiap 4-bit nibble diganti menggunakan tabel substitusi (S-box).
+2. ShiftRows: Baris-baris grid digeser posisinya.
+3. MixColumns: Mencampur kolom menggunakan operasi di Galois Field (GF(2⁴) (16 bit)).
+4. AddRoundKey: XOR dengan round key.
 
-- **Ukuran blok**: 16 bit (dibentuk jadi grid 2x2 yang isinya potongan 4-bit)
-- **Ukuran kunci**: 16 bit
-- **Jumlah ronde**: 3 ronde enkripsi
+### Key Expansion
 
-### Apa yang Terjadi di Tiap Ronde
-
-1. **SubNibbles**: Tiap potongan 4-bit diganti berdasarkan tabel khusus (S-box).
-2. **ShiftRows**: Baris-baris dalam grid digeser (swap sederhana).
-3. **MixColumns**: Kolom-kolom dicampur pakai operasi khusus di Galois Field (GF(2⁴)).
-4. **AddRoundKey**: Hasil sementara di-XOR dengan kunci ronde.
-
-Catatan: Di ronde terakhir, tahap MixColumns dilewati.
-
-### Ekspansi Kunci
-
-Supaya lebih aman, kunci awal dikembangkan jadi 4 kunci baru.  
-Langkahnya:
-
-- Putar bagian akhir kunci
-- Ganti nilainya pakai S-box
-- XOR dengan konstanta ronde
-- Gabungkan hasilnya buat kunci baru
+  - Rotasi bagian terakhir key
+  - Substitusi menggunakan S-box
+  - XOR dengan Rcon
+  - Gabungkan hasilnya untuk menghasilkan key baru
 
 ---
 
-## Alur Proses Enkripsi
+## Flowchart 
+### Mini-AES
 
-| Tahap | Operasi |
-|-------|---------|
-| Mulai | Masukkan Plaintext |
-| Tahap 1 | AddRoundKey (pakai kunci awal) |
-| Tahap 2 (Ronde 1) | SubNibbles → ShiftRows → MixColumns → AddRoundKey |
-| Tahap 3 (Ronde 2) | SubNibbles → ShiftRows → MixColumns → AddRoundKey |
-| Tahap 4 (Ronde Akhir) | SubNibbles → ShiftRows → AddRoundKey |
-| Selesai | Dapat Ciphertext |
+```
+┌─────────────────┐
+│   Plaintext     │
+└────────┬────────┘
+         ▼
+┌─────────────────┐
+│Initial AddRoundKey│
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│   Round 1-2:    │
+│   SubNibbles    │
+│   ShiftRows     │
+│   MixColumns    │
+│   AddRoundKey   │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│   Final Round:  │
+│   SubNibbles    │
+│   ShiftRows     │
+│   AddRoundKey   │
+└────────┬────────┘
+         ▼
+┌─────────────────┐
+│   Ciphertext    │
+└─────────────────┘
+```
+
+### Key Expansion 
+
+```
+┌─────────────────┐
+│    Key awal     │
+└────────┬────────┘
+         │
+         ▼
+┌──────────────────────────────┐
+│Setiap round :                │
+│1. Rotate baris terakhir      │
+│2. Subtitusi S-box            │
+│3. XOR dengan Rcon            │
+└────────────────┬─────────────┘
+                 │
+                 ▼
+┌─────────────────────────────┐
+│      Round Keys (K0-K3)     │
+└─────────────────────────────┘
+```
 
 ---
 
-## Contoh Uji
+## Test Case
 
-| Plaintext | Kunci  | Ciphertext yang Diharapkan |
-|-----------|--------|----------------------------|
-| 0x1234    | 0xABCD | 0xB6F9                     |
-| 0x0000    | 0xFFFF | 0x7892                     |
-| 0x5A5A    | 0xA5A5 | 0x3C6D                     |
+| Plaintext | Kunci   | Ciphertext yang Diharapkan |
+|-----------|---------|----------------------------|
+| 0x1234    | 0xABCD  | 0xB6F9                     |
+| 0x0000    | 0xFFFF  | 0x7892                     |
+| 0x5A5A    | 0xA5A5  | 0x3C6D                     |
+
+### Test Case 1
+
+Hasil expansion key
+Round keys: ['0xabcd', '0x579a', '0x75ef', '0x3ad5']
+
+Initial AddRoundkey 
+0x1234 XOR 0xabcd
+0xb9f9
+
+Round 1:
+SubNibbles
+SBOX = [
+        0x9, 0x4, 0xA, 0xB,
+        0xD, 0x1, 0x8, 0x5,
+        0x6, 0x2, 0x0, 0x3,
+        0xC, 0xE, 0xF, 0x7
+    ]
+0xb9f9 disubtitusikan menjadi 0x3272
+
+ShiftRows
+|a|c| 
+|----------|---------| 
+| b| d| 
+menjadi
+| a|c| 
+| d| b| 
+
+maka
+| 3|7| 
+|----------|---------|
+| 2| 2|
+menjadi
+| 3|7| 
+| 2| 2|
+
+Setelah shiftrows menjadi 0x3272
+
+MixColumns
+MIX_COL_MATRIX = [
+        [3, 2],
+        [2, 3]
+    ]
+Dilakukan perkalian matriks, hasilnya 0xbefd
+
+AddRoundKey
+0xbefd XOR 0x579a
+0xe967
+
+Round 2:
+SubNibbles
+0xe967 disubtitusi dengan Sbox jadi 0xf285
+
+ShiftRows
+0xf285 dishift jadi 0xf582
+
+MixColumns
+0xf582 dilakukan mixcolumn hasilnya 0x8c04
+
+AddRoundkey
+0x8c04 XOR 0x75ef
+0xf9eb
+
+Round 3:
+SubNibbles
+0xf9eb disubtitusi hasilnya 0x72f3
+
+ShiftRows
+0x72f3 dishift hasilnya 0x73f2
+
+AddRoundKey
+0x73f2 XOR 0x3ad5
+0x4927
 
 ---
+## Kelebihan Mini-AES 
 
-## Cara Menjalankan
-
-1. Jalankan file Python utama (misal `python main.py`, atau klik file di IDE seperti VS Code atau PyCharm).
-2. Aplikasi GUI akan langsung terbuka.
-3. Pilih mau operasi:
-   - Enkripsi/Dekripsi satu blok
-   - Enkripsi/Dekripsi banyak blok sekaligus
-4. Masukkan **Plaintext** dan **Kunci** dalam format hex (contoh: `0x1234`).
-5. Tekan tombol proses.
-6. Hasil enkripsi atau dekripsi beserta semua langkahnya akan muncul.
+- Mudah dipahami untuk belajar tentang AES
+- Ukuran keynya kecil sehingga cepat saat dijalankan
+- Ukuran key dan data yang kecil sehingga cocok untuk digunakan device yang terbatas sumber dayanya
 
 ---
-
-## Fitur Tambahan
-
-- Bisa pilih mode ECB atau CBC untuk multi-blok
-- Tes efek avalanche:
-  - Lihat bagaimana perubahan kecil di input bisa ngubah hasilnya total
-- Bisa buka file plaintext dan simpan ciphertext
-- Ada log lengkap semua tahapan enkripsi/dekripsi, dari SubNibbles sampai AddRoundKey
-
----
-
-## Kenapa Mini-AES Menarik
-
-- Sangat gampang dipahami, cocok buat belajar dasar enkripsi.
-- Prosesnya cepat dan ringan.
-- Efek avalanche-nya kelihatan jelas, walaupun ukuran datanya kecil.
-
----
-
 ## Kelemahan Mini-AES
 
-- Ukuran kunci kecil (16-bit) gampang banget di-brute-force.
-- Cuma 3 ronde, jauh lebih lemah dibanding AES asli.
-- Operasinya disederhanakan, jadi kurang aman.
-- Mini-AES **tidak cocok dipakai untuk enkripsi data penting** di dunia nyata.
+- Ukuran kunci hanya 16-bit, sangat mudah untuk brute-force
+- Hanya 3 round, perlindungan jauh lebih lemah dibandingkan AES asli.
+- Terbatas dalam skalabilitas, tidak cocok untuk data yang besar.
 
 ---
+
